@@ -1,0 +1,22 @@
+{
+    "server": "COMPUTERNAME",
+    "shutdown": true,
+    "katanaEnvironment": "\\*",
+    "tasks": [],
+    "taskItemTemplate": {
+        "katanaFile": "*.katana",
+        "renderNode": "*",
+        "var": {
+            "asset": "*",
+            "camera": "*",
+            "lighting": "*",
+            "look": "*"
+        },
+        "threads3d": 0,
+        "frameFrom": 0,
+        "frameTo": 0,
+        "allowedSlaves": [],
+        "forbiddenSlaves": [],
+        "comments": ""
+    }
+}
