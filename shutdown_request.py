@@ -40,7 +40,7 @@ if settings_data["shutdown"]:
 
                     job_done = True
 
-                    for history_task in js.read(history_path):
+                    for history_task in json_manager.read(history_path):
                         for frame_item in history_task["frames"]:
 
                             if not frame_item["complete"]:

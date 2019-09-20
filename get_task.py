@@ -81,7 +81,7 @@ for task in settings_data["tasks"]:
 
                     history_task["frames"].append(frame_item)
                     history_task["frames"] = sorted(history_task["frames"], key=lambda k: k["frame"])
-                  
+                    
                     json_manager.write(history_path, history_data)
                     print(task_translator.get_command(task, frameFrom))
 
