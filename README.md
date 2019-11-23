@@ -1,4 +1,4 @@
-# QueueManager
+# LocalQ
 
 **is a simple program that distribute render tasks for Foundry Katana program between machines where this program was launched**
 
