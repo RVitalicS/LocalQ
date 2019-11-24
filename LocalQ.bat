@@ -23,6 +23,15 @@
 
 
 
+:: check setting for typos and any other errors
+CALL python "%~dp0check_settings.py" > SettingsState
+SET /p SETTINGS_STATE=<SettingsState
+DEL SettingsState
+
+:: stop programm if settings isn't valid
+IF "%SETTINGS_STATE%" NEQ "VALID SETTINGS" EXIT
+
+
 
 :LOOP
 SETLOCAL
