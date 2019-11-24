@@ -1,7 +1,6 @@
 import os
 import re
 import sys
-import time
 import task_translator
 import json_manager
 
@@ -41,7 +40,7 @@ for error_item in error_result:
 
 
 # if final string (time) was not found then just move on
-if not isinstance(log_data["time"], str): sys.exit()
+# if not isinstance(log_data["time"], str): sys.exit()
 
 
 
@@ -53,7 +52,6 @@ task_data = task_translator.get_task(sys.argv[2])
 # get history data
 history_path = os.path.join(os.path.dirname(__file__), "history.json")
 history_data = json_manager.read(history_path)
-
 
 
 # find match in history for current task
@@ -71,8 +69,9 @@ for history_task in history_data:
 
                 # update history, change task state to completed
                 frame_item["complete"] = True
-                frame_item["time"]     = log_data["time"]
-                frame_item["errors"]   = log_data["errors"]
+                # frame_item["time"]     = log_data["time"]
+                # frame_item["errors"]   = log_data["errors"]
+
 
                 json_manager.write(history_path, history_data)
                 sys.exit()

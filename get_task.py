@@ -1,5 +1,8 @@
+
+
 import os
 import sys
+
 import json_manager
 import task_translator
 
@@ -12,17 +15,31 @@ settings_data = json_manager.read(settings_path)
 # create history path
 history_path = os.path.join(os.path.dirname(__file__), "history.json")
 
+# get slave name
+slave = os.getenv("COMPUTERNAME")
 
 
 # define frame item
 frame_item = dict(
     frame=0,
+    tiles=None,
     complete=False,
     time="",
     slave="",
     errors=[])
 
-
+# settings_data["tasks"] = [{
+#         "katanaFile": "\\Scene.katana",
+#         "renderNode": "Render",
+#         "var": {},
+#         "threads3d": 0,
+#         "frameFrom": 0,
+#         "frameTo": 0,
+#         "tileRender": True,
+#         "allowedSlaves": [],
+#         "forbiddenSlaves": [],
+#         "comments": ""
+#     }]
 
 # figure out next command
 for task in settings_data["tasks"]:
@@ -35,16 +52,16 @@ for task in settings_data["tasks"]:
     var             = task["var"]
     frameFrom       = task["frameFrom"]
     frameTo         = task["frameTo"]
+    tileRender      = task["tileRender"]
     allowedSlaves   = task["allowedSlaves"]
     forbiddenSlaves = task["forbiddenSlaves"]
 
 
     # check permissions
-    slave = os.getenv("COMPUTERNAME")
     if len(allowedSlaves) > 0 and slave not in allowedSlaves:
-        sys.exit()
+        continue
     if slave in forbiddenSlaves:
-        sys.exit()
+        continue
 
 
     # get history data
@@ -72,6 +89,15 @@ for task in settings_data["tasks"]:
         match_vars = var==history_var
 
         if match_file and match_node and match_vars:
+
+
+            # if tileRender:
+            #     for history_frame in history_task["frames"]:
+            #         history_tiles = history_frame["tiles"]
+
+            #         if history_tiles and not history_frame["complete"]:
+            #             pass
+
 
             while frameFrom <= frameTo:
                 if frameFrom not in history_frames:
@@ -106,6 +132,13 @@ for task in settings_data["tasks"]:
 
     frame_item["frame"] = frameFrom
     frame_item["slave"] = slave
+
+    if tileRender:
+        tileResolution = settings_data["tileResolution"]
+        raws = tileResolution["raws"]
+        frame_item["tiles"] = [ [] for i in range(raws) ]
+        frame_item["tiles"][0].append(0)
+
     history_item["frames"] = [frame_item]
 
     history_data.append(history_item)

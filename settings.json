@@ -1,22 +1,28 @@
 {
-    "server": "COMPUTERNAME",
-    "shutdown": true,
-    "katanaEnvironment": "\\*",
-    "tasks": [],
+    "server": "COMPUTERNAME",          "//": "computer name that will store render",
+    "shutdown": false,                 "//": "global switcher to turn off computers",
+    "katanaEnvironment": "\\*.bat",    "//": "*.bat file with defined resources",
+    "tileResolution": {
+        "raws": 4,                     "//": "value to split image into tiles",
+        "columns": 4,                  "//": "value to split image into tiles"
+    },
+    "tasks": [],                       "//": "fill out this list with 'taskItemTemplate' >> [{}, {}, ..]",
     "taskItemTemplate": {
-        "katanaFile": "*.katana",
-        "renderNode": "*",
-        "var": {
-            "asset": "*",
-            "camera": "*",
-            "lighting": "*",
-            "look": "*"
+        "katanaFile": "*.katana",      "//": "directory to scene file",
+        "renderNode": "",              "//": "node name to render from",
+        "var": {                       "//": "values for Graph State Variables ( or {})",
+            "asset": "",
+            "look": "",
+            "lighting": "",
+            "camera": "",
+            "resolution": ""
         },
-        "threads3d": 0,
-        "frameFrom": 0,
-        "frameTo": 0,
-        "allowedSlaves": [],
-        "forbiddenSlaves": [],
+        "threads3d": 0,                "//": "the number of threads the renderer uses",
+        "frameFrom": 0,                "//": "specifies range to render",
+        "frameTo": 0,                  "//": "the same value for single frame render",
+        "tileRender": false,           "//": "to split single task between machines",
+        "allowedSlaves": [],           "//": "list of machines that can get this task ([]=all)",
+        "forbiddenSlaves": [],         "//": "list of machines that can't get this task ([]=all can)",
         "comments": ""
     }
 }

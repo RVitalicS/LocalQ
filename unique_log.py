@@ -29,9 +29,11 @@ var = "_".join(var)
 if len(var) > 0: name_list.append(var)
 
 # get name of render node
-renderNode = task["renderNode"]
 frame = task["frame"]
 name_list.append("frame{:04d}".format(frame))
+
+renderNode = task["renderNode"]
+name_list.append(renderNode)
 
 
 # create name of log file
