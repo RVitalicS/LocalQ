@@ -7,27 +7,6 @@ import bug_log
 
 
 
-def read (path_in):
-
-    '''
-        Read data from json file
-        
-        Args:
-            path_in <type 'str'>: Path to json file
-
-        Return:
-            <type 'dict'|'list'>: Data from json file
-    '''
-
-    data = None
-
-    with open(path_in, 'r') as file_read:
-        data = json.load(file_read)
-    
-    return data
-
-
-
 
 def write (path_in, data):
 
@@ -59,3 +38,30 @@ def write (path_in, data):
             time.sleep(random.randint(0, 30))
 
     return True
+
+
+
+
+
+def read (path_in):
+
+    '''
+        Read data from json file
+        
+        Args:
+            path_in <type 'str'>: Path to json file
+
+        Return:
+            <type 'dict'|'list'>: Data from json file
+    '''
+
+
+    if not os.path.exists(path_in):
+        write(path_in, [])
+
+    data = None
+
+    with open(path_in, 'r') as file_read:
+        data = json.load(file_read)
+    
+    return data

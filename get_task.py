@@ -4,6 +4,7 @@ import os
 import sys
 
 import json_manager
+import tile_manager
 import task_translator
 
 
@@ -19,27 +20,8 @@ history_path = os.path.join(os.path.dirname(__file__), "history.json")
 slave = os.getenv("COMPUTERNAME")
 
 
-# define frame item
-frame_item = dict(
-    frame=0,
-    tiles=None,
-    complete=False,
-    time="",
-    slave="",
-    errors=[])
 
-# settings_data["tasks"] = [{
-#         "katanaFile": "\\Scene.katana",
-#         "renderNode": "Render",
-#         "var": {},
-#         "threads3d": 0,
-#         "frameFrom": 0,
-#         "frameTo": 0,
-#         "tileRender": True,
-#         "allowedSlaves": [],
-#         "forbiddenSlaves": [],
-#         "comments": ""
-#     }]
+
 
 # figure out next command
 for task in settings_data["tasks"]:
@@ -57,17 +39,29 @@ for task in settings_data["tasks"]:
     forbiddenSlaves = task["forbiddenSlaves"]
 
 
+    # define frame item
+    frame_item = dict(
+        frame=0,
+        tiles=None,
+        complete=False,
+        time="",
+        slaves=[slave],
+        errors=[])
+
+    tile=None
+    if tileRender:
+        tileResolution = settings_data["tileResolution"]
+        raws = tileResolution["raws"]
+        frame_item["tiles"] = [ [] for i in range(raws) ]
+        frame_item["tiles"][0].append(0)
+        tile=[0, 0]
+
+
     # check permissions
     if len(allowedSlaves) > 0 and slave not in allowedSlaves:
         continue
     if slave in forbiddenSlaves:
         continue
-
-
-    # get history data
-    if not os.path.exists(history_path):
-        json_manager.write(history_path, [])
-    history_data = json_manager.read(history_path)
 
 
 
@@ -77,6 +71,10 @@ for task in settings_data["tasks"]:
     match_vars = False
 
     complete = False
+
+
+    history_data = json_manager.read(history_path)
+
     for history_task in history_data:
 
         history_katanaFile = history_task["katanaFile"]
@@ -91,25 +89,46 @@ for task in settings_data["tasks"]:
         if match_file and match_node and match_vars:
 
 
-            # if tileRender:
-            #     for history_frame in history_task["frames"]:
-            #         history_tiles = history_frame["tiles"]
+            if tileRender:
+                for history_frame in history_task["frames"]:
 
-            #         if history_tiles and not history_frame["complete"]:
-            #             pass
+                    if not history_frame["complete"]:
+                        history_tiles = history_frame["tiles"]
 
+                        next_tile = tile_manager.get_next(history_tiles)
 
+                        if next_tile:
+                            column = next_tile[0]
+                            raw    = next_tile[1]
+
+                            history_tiles[raw].append(column)
+                            for raw in history_tiles: raw=raw.sort()
+
+                            history_task["frames"] = sorted(history_task["frames"], key=lambda k: k["frame"])
+
+                            if slave not in history_frame["slaves"]:
+                                history_frame["slaves"].append(slave)
+
+                            render_frame = history_frame["frame"]
+
+                            json_manager.write(history_path, history_data)
+                            print(task_translator.get_command(task, render_frame, tile=next_tile))
+
+                            sys.exit()
+
+            
             while frameFrom <= frameTo:
                 if frameFrom not in history_frames:
 
                     frame_item["frame"] = frameFrom
-                    frame_item["slave"] = slave
 
                     history_task["frames"].append(frame_item)
                     history_task["frames"] = sorted(history_task["frames"], key=lambda k: k["frame"])
-                    
+
+                    render_frame = frame_item["frame"]
+
                     json_manager.write(history_path, history_data)
-                    print(task_translator.get_command(task, frameFrom))
+                    print(task_translator.get_command(task, render_frame, tile=tile))
 
                     sys.exit()
 
@@ -131,19 +150,14 @@ for task in settings_data["tasks"]:
     history_item["var"] = var
 
     frame_item["frame"] = frameFrom
-    frame_item["slave"] = slave
-
-    if tileRender:
-        tileResolution = settings_data["tileResolution"]
-        raws = tileResolution["raws"]
-        frame_item["tiles"] = [ [] for i in range(raws) ]
-        frame_item["tiles"][0].append(0)
-
     history_item["frames"] = [frame_item]
 
     history_data.append(history_item)
-    
+
+
+    render_frame = frame_item["frame"]
+
     json_manager.write(history_path, history_data)
-    print(task_translator.get_command(task, frameFrom))
+    print(task_translator.get_command(task, render_frame, tile=tile))
 
     sys.exit()

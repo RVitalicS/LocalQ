@@ -9,7 +9,7 @@
 
 :: INPUT ARGUMENTS
 ::
-:: -shutdown      - keyword argument (optional) to turn off computer when the calculations were over
+:: -shutdown      - turn off computer when job is done
 ::                  (depending on switch in settings.json file)
 
 

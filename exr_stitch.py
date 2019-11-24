@@ -4,6 +4,7 @@ import subprocess
 import shutil
 
 import json_manager
+import tile_manager
 import home
 import name_math
 
@@ -77,35 +78,6 @@ def output_names (path):
 
 
 
-def tile_resolution (output_list):
-
-    tile_tags = []
-    for output in output_list:
-
-        tile = re.search('tile_\d+_\d+', output)
-        if tile:
-            tile = tile.group(0)
-            if tile not in tile_tags:
-                tile_tags.append(tile)
-
-    xtiles = 1
-    ytiles = 1
-
-    for tag in tile_tags:
-
-        x = re.sub('tile_', '', tag)
-        x = re.sub('_\d+$', '', x)
-        x = int(x) + 1
-        if x > xtiles: xtiles = x
-
-        y = re.sub('^tile_\d+_', '', tag)
-        y = int(y) + 1
-        if y > ytiles: ytiles = y
-
-    return {'xtiles': xtiles, 'ytiles': ytiles}
-
-
-
 
 def group_outputs (path):
 
@@ -119,12 +91,14 @@ def group_outputs (path):
             if re.match('.+{}.+'.format(name), file):
                 outputs.append(os.path.join(path, file))
 
-        if outputs:
+        resolution = tile_manager.get_resolution()
+        required_count = resolution[0] * resolution[1]
 
-            resolution = tile_resolution(outputs)
+        if len(outputs) == required_count:
 
             groups.append({
-                **resolution,
+                'xtiles': resolution[0],
+                'ytiles': resolution[1],
                 'output': os.path.join(path, '{}.exr'.format(name)),
                 'outputs': outputs})
 
@@ -153,9 +127,9 @@ def stitch_outputs (path):
                 xtiles  = str(group['xtiles'])
                 ytiles  = str(group['ytiles'])
 
-                outputs = group['outputs']
-                outputs = ['"{}"'.format(i) for i in outputs]
-                outputs = ' '.join(outputs)
+                tile_outputs = group['outputs']
+                tile_outputs = ['"{}"'.format(i) for i in tile_outputs]
+                tile_outputs = ' '.join(tile_outputs)
 
                 output  = group['output']
                 output  = '"{}"'.format(output)
@@ -164,7 +138,7 @@ def stitch_outputs (path):
                     ExrTileStitch,
                     xtiles,
                     ytiles,
-                    outputs,
+                    tile_outputs,
                     output ]
 
                 process = subprocess.Popen(' '.join(arguments))

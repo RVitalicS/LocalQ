@@ -11,7 +11,7 @@
 
 
 ### Arguments for LocalQ.bat
-**-shutdown**: keyword argument \(optional\) to turn off computer when the calculations were over \(depending on switch in settings.json file\)
+**-shutdown**: keyword argument to turn off when job is done \(optional\)
 
 
 ### Required

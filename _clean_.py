@@ -1,21 +1,38 @@
 
 
 import os
+import re
 import shutil
 
 this_dir = os.path.dirname(__file__)
+black_list = []
 
 
 
 for item in ["__pycache__", "log", "history.json"]:
 
-    target = os.path.join(this_dir, item)
-    if os.path.exists(target):
+    victim = os.path.join(this_dir, item)
+    if os.path.exists(victim):
+
+        black_list.append(victim)
 
 
 
-        if os.path.isfile(target):
-            os.remove(target)
+for item in os.listdir(this_dir):
+    if re.match(".*\.txt$", item):
 
-        else:
-            shutil.rmtree(target)
+        victim = os.path.join(this_dir, item)
+        if os.path.exists(victim):
+
+            black_list.append(victim)
+
+
+
+
+for victim in black_list:
+
+    if os.path.isfile(victim):
+        os.remove(victim)
+
+    else:
+        shutil.rmtree(victim)

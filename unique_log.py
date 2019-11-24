@@ -28,9 +28,12 @@ var = [key + var[key][0].upper() + var[key][1:] for key in var]
 var = "_".join(var)
 if len(var) > 0: name_list.append(var)
 
-# get name of render node
+
 frame = task["frame"]
 name_list.append("frame{:04d}".format(frame))
+
+tile = task["tile"]
+if tile: name_list.append("tile{}{}".format(tile[0], tile[1]))
 
 renderNode = task["renderNode"]
 name_list.append(renderNode)

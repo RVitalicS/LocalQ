@@ -8,9 +8,14 @@ settings_path = os.path.join(os.path.dirname(__file__), "settings.json")
 settings_data = json_manager.read(settings_path)
 
 
+# create history path
+history_path = os.path.join(os.path.dirname(__file__), "history.json")
+history_data = json_manager.read(history_path)
 
 
-def get_command (task_dictionary, frame_target):
+
+
+def get_command (task_dictionary, frame_target, tile=None):
 
     '''
         Creates string command for "Command Prompt"
@@ -51,6 +56,19 @@ def get_command (task_dictionary, frame_target):
     frame = "-t {}".format(frame_target)
     join_list.append(frame)
 
+    if tile:
+        tileResolution = settings_data["tileResolution"]
+
+        columns = tileResolution["columns"]
+        raws    = tileResolution["raws"]
+
+        column = tile[0]
+        raw    = tile[1]
+
+        tile = "--tile-render={},{},{},{}".format(column, raw, columns, raws)
+        join_list.append(tile)
+
+
     command_string = " ".join(join_list)
 
     return command_string
@@ -78,6 +96,8 @@ def get_task (task_string):
     if katanaFile:
         katanaFile = re.sub(" ", "", katanaFile.group(0))
         katanaFile = re.sub("--katana-file=", "", katanaFile)
+        katanaFile = re.sub("'", "'", katanaFile)
+        katanaFile = re.sub('"', '', katanaFile)
         task["katanaFile"] = katanaFile
 
     var = {}
@@ -103,6 +123,32 @@ def get_task (task_string):
     if frame:
         frame = re.sub("-t ", "", frame.group(0))
         if frame.isdigit():
-            task["frame"] = int(frame)
+            frame = int(frame)
+            task["frame"] = frame
+
+    tile = None
+    tiles = re.search(r"--tile-render=\d+,\d+,\d+,\d+", task_string)
+    if tiles:
+
+        tile = tiles.group(0)
+        tile = re.sub("--tile-render=", "", tile)
+        tile = re.sub(r",\d+,\d+$", "", tile)
+        tile = [ int(i) for i in tile.split(",")]
+
+        tiles = None
+        for history_task in history_data:
+
+            match_file = history_task["katanaFile"]==katanaFile
+            match_node = history_task["renderNode"]==renderNode
+            match_vars = history_task["var"]==var
+
+            if match_file and match_node and match_vars:
+                for history_frame in history_task["frames"]:
+                    if history_frame["frame"] == frame:
+                        tiles = history_frame["tiles"]
+    else: tiles = None
+
+    task["tile"]  = tile
+    task["tiles"] = tiles
 
     return task
