@@ -19,12 +19,14 @@ for item in ["__pycache__", "log", "history.json"]:
 
 
 for item in os.listdir(this_dir):
-    if re.match(".*\.txt$", item):
 
-        victim = os.path.join(this_dir, item)
-        if os.path.exists(victim):
+    for ext in ["pyc", "txt"]:
+        if re.match(".*\.{}$".format(ext), item):
 
-            black_list.append(victim)
+            victim = os.path.join(this_dir, item)
+            if os.path.exists(victim):
+
+                black_list.append(victim)
 
 
 

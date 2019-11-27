@@ -48,5 +48,9 @@ log_path = os.path.normpath(log_path)
 
 
 
+with open(log_path, 'w') as log_file:
+    log_file.write('{}\n'.format(os.getenv('COMPUTERNAME')))
+
+
 # share log file path
 print(log_path)

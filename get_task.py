@@ -13,14 +13,22 @@ import task_translator
 settings_path = os.path.join(os.path.dirname(__file__), "settings.json")
 settings_data = json_manager.read(settings_path)
 
-# create history path
-history_path = os.path.join(os.path.dirname(__file__), "history.json")
+
+
 
 # get slave name
 slave = os.getenv("COMPUTERNAME")
 
 
+# exit point
+if "ALL" in settings_data["exit"]: sys.exit()
+if slave in settings_data["exit"]: sys.exit()
 
+
+
+
+# create history path
+history_path = os.path.join(os.path.dirname(__file__), "history.json")
 
 
 # figure out next command

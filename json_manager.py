@@ -34,7 +34,7 @@ def write (path_in, data):
             success = True
 
         except Exception as exception_message:
-            bug_log.write("exceptions_write", str(exception_message))
+            bug_log.write(__name__, str(exception_message))
             time.sleep(random.randint(0, 30))
 
     return True
@@ -54,7 +54,6 @@ def read (path_in):
         Return:
             <type 'dict'|'list'>: Data from json file
     '''
-
 
     if not os.path.exists(path_in):
         write(path_in, [])
