@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 
 import json_manager
 import tile_manager
@@ -16,6 +17,7 @@ settings_data = json_manager.read(settings_path)
 
 
 
+
 # get slave name
 slave = os.getenv("COMPUTERNAME")
 
@@ -23,6 +25,25 @@ slave = os.getenv("COMPUTERNAME")
 # exit point
 if "ALL" in settings_data["exit"]: sys.exit()
 if slave in settings_data["exit"]: sys.exit()
+
+
+# work on free hours only
+if settings_data["timeException"]:
+    
+    day     = time.localtime().tm_wday
+    hours   = time.localtime().tm_hour
+    minutes = time.localtime().tm_min
+
+    if day < 4:
+
+        current_time = hours * 60 + minutes
+
+        morning =  7 * 60
+        evening = 18 * 60
+
+        if morning < current_time < evening:
+            sys.exit()
+
 
 
 
@@ -60,9 +81,15 @@ for task in settings_data["tasks"]:
     if tileRender:
         tileResolution = settings_data["tileResolution"]
         raws = tileResolution["raws"]
-        frame_item["tiles"] = [ [] for i in range(raws) ]
-        frame_item["tiles"][0].append(0)
-        tile=[0, 0]
+
+        tile_structure = [ [] for i in range(raws) ]
+        tile = tile_manager.get_next(tile_structure)
+        
+        column = tile[0]
+        raw    = tile[1]
+        
+        tile_structure[raw].append(column) 
+        frame_item["tiles"] = tile_structure
 
 
     # check permissions
