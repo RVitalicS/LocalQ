@@ -1,6 +1,8 @@
 {
-    "server": "COMPUTERNAME",          "//": "computer name that will store render",
-    "shutdown": false,                 "//": "global switcher to turn off computers",
+    "server": "COMPUTERNAME",          "//": "computer name that will store render data to turn it off the last",
+    "shutdown": false,                 "//": "switcher to turn off computers (required argument)",
+    "timeException": false,            "//": "switcher to work only in defined time range",
+    "exit": [],                        "//": "list of machines to exit before getting next task ('ALL' for any machine)",
     "katanaEnvironment": "\\*.bat",    "//": "*.bat file with defined resources",
     "tileResolution": {
         "raws": 4,                     "//": "value to split image into tiles",
@@ -21,7 +23,7 @@
         "frameFrom": 0,                "//": "specifies range to render",
         "frameTo": 0,                  "//": "the same value for single frame render",
         "tileRender": false,           "//": "to split single task between machines",
-        "allowedSlaves": [],           "//": "list of machines that can get this task ([]=all)",
+        "allowedSlaves": [],           "//": "list of machines that can get this task and other can't ([]=all can)",
         "forbiddenSlaves": [],         "//": "list of machines that can't get this task ([]=all can)",
         "comments": ""
     }
