@@ -51,5 +51,6 @@ if settings_data["shutdown"]:
 
 
                 # then turn off
+                time.sleep(180)
                 print(shutdown_command)
                 sys.exit()
