@@ -68,6 +68,11 @@ for task in settings_data['tasks']:
     forbiddenSlaves = task['forbiddenSlaves']
 
 
+    reverse_order = False
+    if frameFrom > frameTo:
+        reverse_order = True
+
+
     # define frame item
     frame_item = dict(
         frame=0,
@@ -152,7 +157,7 @@ for task in settings_data['tasks']:
                             sys.exit()
 
             
-            while frameFrom <= frameTo:
+            while (frameFrom >= frameTo) if reverse_order else (frameFrom <= frameTo):
                 if frameFrom not in history_frames:
 
                     frame_item['frame'] = frameFrom
@@ -167,7 +172,11 @@ for task in settings_data['tasks']:
 
                     sys.exit()
 
-                frameFrom += 1
+
+                if reverse_order:
+                    frameFrom -= 1
+                else:
+                    frameFrom += 1
 
             complete = True
 
